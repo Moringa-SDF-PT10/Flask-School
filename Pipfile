@@ -9,11 +9,12 @@ flask-sqlalchemy = "*"
 flask-migrate = "*"
 sqlalchemy-serializer = "*"
 requests = "*"
+flask-cors = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.8"
+python_version = "*"
 
 [scripts]
 start = "python app.py"

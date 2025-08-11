@@ -1,0 +1,148 @@
+{
+  "info": {
+    "name": "Flask School API",
+    "_postman_id": "flask-school-api-collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Students",
+      "item": [
+        {
+          "name": "Create Student",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "http://localhost:3000/students" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"John Doe\",\n    \"age\": 20,\n    \"email\": \"john@example.com\",\n    \"bio\": \"Loves AI and coding\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Random Student",
+          "request": { "method": "POST", "url": { "raw": "http://localhost:3000/students/random" } }
+        },
+        {
+          "name": "Get All Students",
+          "request": { "method": "GET", "url": { "raw": "http://localhost:3000/students" } }
+        },
+        {
+          "name": "Get Student by ID",
+          "request": { "method": "GET", "url": { "raw": "http://localhost:3000/students/1" } }
+        },
+        {
+          "name": "Update Student",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "http://localhost:3000/students/1" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Updated Name\",\n    \"age\": 25\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Student",
+          "request": { "method": "DELETE", "url": { "raw": "http://localhost:3000/students/1" } }
+        }
+      ]
+    },
+    {
+      "name": "Courses",
+      "item": [
+        {
+          "name": "Create Course",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "http://localhost:3000/courses" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Math 101\",\n    \"price\": 500\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Courses",
+          "request": { "method": "GET", "url": { "raw": "http://localhost:3000/courses" } }
+        },
+        {
+          "name": "Get Course by ID",
+          "request": { "method": "GET", "url": { "raw": "http://localhost:3000/courses/1" } }
+        },
+        {
+          "name": "Update Course",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "http://localhost:3000/courses/1" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Updated Course\",\n    \"price\": 600\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Course",
+          "request": { "method": "DELETE", "url": { "raw": "http://localhost:3000/courses/1" } }
+        }
+      ]
+    },
+    {
+      "name": "Enrollments",
+      "item": [
+        {
+          "name": "Create Enrollment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "http://localhost:3000/enrollments" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"student_id\": 1,\n    \"course_id\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Enrollments",
+          "request": { "method": "GET", "url": { "raw": "http://localhost:3000/enrollments" } }
+        },
+        {
+          "name": "Get Enrollment by ID",
+          "request": { "method": "GET", "url": { "raw": "http://localhost:3000/enrollments/1" } }
+        },
+        {
+          "name": "Update Enrollment",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "http://localhost:3000/enrollments/1" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"student_id\": 1,\n    \"course_id\": 2\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Enrollment",
+          "request": { "method": "DELETE", "url": { "raw": "http://localhost:3000/enrollments/1" } }
+        }
+      ]
+    }
+  ]
+}

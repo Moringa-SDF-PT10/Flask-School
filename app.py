@@ -2,9 +2,13 @@ from flask import Flask, request, send_from_directory, jsonify, make_response
 from models import db, Course, Student, Enrollment, BoardingHouse, employee_meetings
 from flask_migrate import Migrate
 import requests
+from flask_cors import CORS
+
+
 
 # Create a Flask application instance
 app = Flask(__name__)
+CORS(app)
 
 # setup DB resources
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///schools.db"
@@ -34,7 +38,7 @@ def create_student():
 
     return response
 
-
+# ---------------------------Student Operations---------------------------
 # Create Student with Random Details
 @app.route("/students/random", methods=["POST"])
 def create_random_student():
@@ -57,11 +61,6 @@ def create_random_student():
     return make_response(student.to_dict(), 200)
 
 
-# @app.route("/joined", methods=["GET"])
-# def get_joined():
-#     employees = 
-#     return make_response(students_data, 200)
-
 # READ all students
 @app.route("/students", methods=["GET"])
 def get_students():
@@ -73,6 +72,7 @@ def get_students():
 @app.route("/students/<int:id>", methods=["PUT", "PATCH"])
 def edit_student(id):
     student = Student.query.get_or_404(id)
+    
     data = request.get_json()
     student.full_name = data.get("name", student.full_name)
     student.age = data.get("age", student.age)
@@ -87,18 +87,52 @@ def delete_student(id):
     db.session.commit()
     return jsonify({ "message": f"Deleted student with id {id} successfully" }), 200
 
+
+# ---------------------------Course operations---------------------------
 # CREATE Course
 @app.route("/courses", methods=["POST"])
 def create_course():
     data = request.get_json()
     name = data["name"]
     price = data["price"]
+
     course = Course(name=name, price=price)
     db.session.add(course)
     db.session.commit()
     return jsonify(course.to_dict()), 201
 
+# Fetch all courses
+@app.route("/courses", methods=["GET"])
+def get_courses():
+    courses = Course.query.all()
+    return jsonify([c.to_dict() for c in courses]), 200
 
+# Fetch course by ID
+@app.route("/courses/<int:id>", methods=["GET"])
+def get_course(id):
+    course = Course.query.get_or_404(id)
+    return jsonify(course.to_dict()), 200
+
+# Update Course by ID
+@app.route("/courses/<int:id>", methods=["PUT", "PATCH"])
+def update_course(id):
+    course = Course.query.get_or_404(id)
+    data = request.get_json()
+    course.name = data.get("name", course.name)
+    course.price = data.get("price", course.price)
+    db.session.commit()
+    return jsonify(course.to_dict()), 200
+
+# Delete Course by ID
+@app.route("/courses/<int:id>", methods=["DELETE"])
+def delete_course(id):
+    course = Course.query.get_or_404(id)
+    db.session.delete(course)
+    db.session.commit()
+    return jsonify({"success": f"Course {id} deleted"}), 200
+
+
+# ---------------------------Enrollment operations---------------------------
 # Enroll Students
 @app.route("/enrollment", methods=["POST"])
 def enroll_student():
@@ -115,6 +149,43 @@ def enroll_student():
     db.session.commit()
     return jsonify(enrollment.to_dict()), 201 
 
+# Fetch all enrollments
+@app.route("/enrollments", methods=["GET"])
+def get_enrollments():
+    enrollments = Enrollment.query.all()
+    return jsonify([e.to_dict() for e in enrollments]), 200
+
+# Fetch enrollment by ID
+@app.route("/enrollments/<int:id>", methods=["GET"])
+def get_enrollment(id):
+    enrollment = Enrollment.query.get_or_404(id)
+    return jsonify(enrollment.to_dict()), 200
+
+# Update enrollment
+@app.route("/enrollments/<int:id>", methods=["PUT", "PATCH"])
+def update_enrollment(id):
+    enrollment = Enrollment.query.get_or_404(id)
+    data = request.get_json()
+    if "course_id" in data:
+        Course.query.get_or_404(data["course_id"])
+        enrollment.course_id = data["course_id"]
+    if "student_id" in data:
+        Student.query.get_or_404(data["student_id"])
+        enrollment.student_id = data["student_id"]
+    db.session.commit()
+    return jsonify(enrollment.to_dict()), 200
+
+# Delete enrollment 
+@app.route("/enrollments/<int:id>", methods=["DELETE"])
+def delete_enrollment(id):
+    enrollment = Enrollment.query.get_or_404(id)
+    db.session.delete(enrollment)
+    db.session.commit()
+    return jsonify({"message": f"Enrollment {id} deleted"}), 200
+
+
+
+
 
 # READ all boarding houses
 @app.route("/houses", methods=["GET"])
@@ -126,46 +197,7 @@ def get_houses():
 # TODO: Implement all CRUD operations for Course and Enrollment models
 
 
-# Added app routes
-@app.route('/')
-def index():
-    return "<p>Hello Moringa World</p>"
 
-# Courses Route
-@app.route('/courses')
-def courses():
-    return "This is the courses page"
-
-# course details
-@app.route('/courses/<int:course_id>')
-def course_details(course_id):
-    return f"This is course id: {course_id}"
-
-# course name
-# @app.route('/courses/<course_id>')
-# def course_name(course_id):
-#     return f"This is course name: ==> {course_id}"
-
-# path
-@app.route('/courses/<path:course_file>')
-def course_file(course_file):
-    return f'<img src="{send_from_directory("/", course_file).data}">'
-
-# query params
-@app.route('/course_details')
-def course_name():
-    c_name = request.args.get("name")
-    c_date = request.args.get("date")
-    return f"This is course {c_name} created on date: ==> {c_date}"
-
-
-@app.route('/about')
-def about():
-    return "About"
-
-@app.route('/contact')
-def contact():
-    return " Contact"
 
 
 # configure how the app is run
