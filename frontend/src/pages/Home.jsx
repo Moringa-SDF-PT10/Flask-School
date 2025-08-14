@@ -53,6 +53,7 @@ export default function Home()
         courses && courses.map((course)=>(
           <div className="border rounded p-3">
             <h3>{course.title}</h3>
+            <h3>Price : {course.price}</h3>
             <h5>No. Enrolled {course.students.length}</h5>
             <button onClick={()=> deleteCourse(course.id)} className="bg-red-600 text-white px-2 py-1 text-sm">Delete</button>
           </div>

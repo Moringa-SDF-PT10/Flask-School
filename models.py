@@ -6,8 +6,8 @@ from sqlalchemy import MetaData
 db = SQLAlchemy()
 metadata = MetaData()
 
-class Student(db.Model, SerializerMixin):
-    __tablename__ = "students"
+class User(db.Model, SerializerMixin):
+    __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(200), nullable=False)
@@ -15,10 +15,15 @@ class Student(db.Model, SerializerMixin):
     email = db.Column(db.String(200), default=f"{id}@sample.com", nullable=False, unique=True)
     boarding_house = db.Column(db.Integer, db.ForeignKey("boarding_houses.id"), nullable=True)
     bio = db.Column(db.String, nullable=True)
+    password = db.Column(db.String(256),nullable=True)
+    is_admin = db.Column(db.Boolean, default=False)
 
     # reg_code = db.Column(db.String(200), nullable=False, unique=True)
+    # boarding_house = db.relationship("BoardingHouse", backref="users")
 
-    enrollments = db.relationship("Enrollment", back_populates='student', cascade="all, delete-orphan")
+
+
+    enrollments = db.relationship("Enrollment", back_populates='user', cascade="all, delete-orphan")
 
     __table_args__ = (
         db.CheckConstraint('age >= 18'),
@@ -37,7 +42,7 @@ class Student(db.Model, SerializerMixin):
     def dict_short(self):
         return {
             "id": self.id,
-            "name": self.full_name
+            "names": self.full_name
         }
     
 
@@ -70,7 +75,8 @@ class Course(db.Model):
         return {
             "id": self.id,
             "title": self.name,
-            "students": [ e.student.to_dict() for e in self.enrollments]
+            "price": self.price,
+            "users": [ e.user.to_dict() for e in self.enrollments]
         }
     
     def dict_short(self):
@@ -80,10 +86,10 @@ class Course(db.Model):
         }
 
 employee_meetings = db.Table(
-    'student_course_join',
+    'user_course_join',
     metadata,
-    db.Column('student_id', db.Integer, db.ForeignKey(
-        'students.id'), primary_key=True),
+    db.Column('user_id', db.Integer, db.ForeignKey(
+        'users.id'), primary_key=True),
     db.Column('course_id', db.Integer, db.ForeignKey(
         'courses.id'), primary_key=True)
 )
@@ -93,16 +99,16 @@ class Enrollment(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     course_id = db.Column(db.Integer, db.ForeignKey("courses.id"), nullable=False)
-    student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
-    student = db.relationship("Student", back_populates="enrollments")
+    user = db.relationship("User", back_populates="enrollments")
     course = db.relationship("Course", back_populates="enrollments")
 
     def to_dict(self):
         return {
             "id": self.id,
             "course": self.course.dict_short(),
-            "student": self.student.dict_short()
+            "user": self.user.dict_short()
         }
 
 
@@ -112,3 +118,12 @@ class BoardingHouse(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
     mascot = db.Column(db.String(200), nullable=False)
+
+
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "mascot": self.mascot,
+        }
